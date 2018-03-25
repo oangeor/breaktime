@@ -5,14 +5,16 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    // {
-    //   path: '*',
-    //   redirect: '/'
-    // }
+    {
+      path: '*',
+      redirect: '/timer'
+    },
     {
       path:'/timer',
       name:'timer',
-      component:require('@/components/timer/timer-work-dial.vue').default
+      // component:require('@/components/timer/timer-settings.vue').default
+      component:require('@/components/timer/index.vue').default
+      // component:require('@/components/timer/timer-work-dial.vue').default
     },
     {
       path:'/settings',

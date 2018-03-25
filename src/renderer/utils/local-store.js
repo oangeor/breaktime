@@ -8,7 +8,7 @@ console.log(path);
 export const defaults = {
   // alwaysOnTop: false,
   // notifications: true,
-  workRounds: '4',
+  workRounds: '3',
   timeLongBreak: '15',
   timeShortBreak: '5',
   timeWork: '25'
@@ -55,9 +55,9 @@ export default class LocalStore {
     })
   }
 
-  reload() {
-    this.data = parseDataFile(this.path, defaults)
-  }
+  // reload() {
+  //   this.data = parseDataFile(this.path, defaults)
+  // }
 }
 
 

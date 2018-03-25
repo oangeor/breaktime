@@ -2,16 +2,17 @@ import {createLocalStore} from "../../utils/local-store";
 
 const localStore = createLocalStore()
 const state = {
+  workRounds: parseInt(localStore.get('workRounds')),
   round: 1,
   timeLongBreak: parseInt(localStore.get('timeLongBreak')),
   timeShortBreak: parseInt(localStore.get('timeShortBreak')),
   timeWork: parseInt(localStore.get('timeWork')),
-  currentRound: 'short-break',//show-break long-break
+  currentBreak: 'work',//show-break long-break
 };
 
 const getters = {
-  currentRound() {
-    return state.currentRound;
+  currentBreak() {
+    return state.currentBreak;
   },
   timeLongBreak() {
     return state.timeLongBreak
@@ -21,6 +22,12 @@ const getters = {
   },
   timeWork() {
     return state.timeWork
+  },
+  round() {
+    return state.round
+  },
+  workRounds() {
+    return state.workRounds
   }
 };
 
@@ -32,8 +39,6 @@ const mutations = {
     switch (key) {
       case 'time-work':
         state.timeWork = value;
-        console.log(state)
-
         break;
       case 'time-long-break':
         state.timeLongBreak = value;
@@ -41,20 +46,34 @@ const mutations = {
       case 'time-short-break':
         state.timeShortBreak = value;
         break;
+      case 'work-rounds':
+        state.workRounds = value;
+        break;
     }
+
   },
-  RESET_TIME(state, payload) {
-    state.timeWork = payload.timeWork
-    state.timeShortBreak = payload.timeShortBreak
-    state.timeLongBreak = payload.timeLongBreak
+
+
+  SET_CURRENT_BREAK(state, payload) {
+    console.log("set_current_break+  " + payload)
+    state.currentBreak = payload;
+    if (payload === 'short-break') {
+      state.round += 1
+    } else if (payload === 'long-break' && state.round > state.workRounds) {
+      state.round = 1;
+    }
   }
+  // RESET_TIME(state, payload) {
+  //   state.timeWork = payload.timeWork
+  //   state.timeShortBreak = payload.timeShortBreak
+  //   state.timeLongBreak = payload.timeLongBreak
+  // }
 };
 
 const actions = {
     setTime({commit}, payload) {
       commit('SET_TIME', payload);
       const key = payload.key;
-
       const value = payload.value;
       switch (key) {
         case 'time-work':
@@ -66,20 +85,27 @@ const actions = {
         case 'time-short-break':
           localStore.set('timeShortBreak', value);
           break;
+        case 'work-rounds':
+          localStore.set('workRounds', value);
+          break;
+
+
       }
     },
-    resetTime({commit}) {
-      localStore.reload();
-      const timeLongBreak = localStore.get('timeLongBreak')
-      const timeShortBreak = localStore.get('timeShortBreak')
-      const timeWork = localStore.get('timeWork')
-      const newState = {
-        timeLongBreak,
-        timeShortBreak,
-        timeWork
-      };
-      commit('RESET_TIME', newState)
+    setCurrentBreak({commit}, payload) {
+      commit('SET_CURRENT_BREAK', payload)
     }
+    // resetTime({commit}) {
+    //   const timeLongBreak = localStore.get('timeLongBreak')
+    //   const timeShortBreak = localStore.get('timeShortBreak')
+    //   const timeWork = localStore.get('timeWork')
+    //   const newState = {
+    //     timeLongBreak,
+    //     timeShortBreak,
+    //     timeWork
+    //   };
+    //   commit('RESET_TIME', newState)
+    // }
   }
 ;
 

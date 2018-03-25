@@ -1,33 +1,49 @@
 <template>
-  <div class="container">
-    <div class="time-show">
-      <p>{{timeElapsed}}</p>
-      <p>{{timeRemaining}}</p>
+    <div class="wrapper">
+        <div class="container">
+            <div class="title">
+                <p>BreakTime</p>
+            </div>
+            <div class="content-container">
+                <div class="time-show">
+                    <p>{{timeElapsed}}</p>
+                    <p>{{timeRemaining}}</p>
+
+                </div>
+                <div class="process-bar">
+                    <el-progress :show-text="false" :percentage="percentage" :stroke-width="18"></el-progress>
+                </div>
+                <div class="button-row" round>
+                    <div class="Button">
+                        <el-dropdown :split-button="true" type="info" @click="dropDownClick" @command="dropDownCommand"
+                                     placement="bottom">
+                            In a Minute
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="1">In a Minute</el-dropdown-item>
+                                <el-dropdown-item command="5">In 5 Minute</el-dropdown-item>
+                                <el-dropdown-item command="15">In 15 Minute</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                    <div class="Button">
+                        <el-button type="info" size="medium" @click="doneButtonClick"> Done</el-button>
+                    </div>
+                </div>
+                <!--<el-row>-->
+                <!--<el-button size="medium" style=" font-size: 13px;padding: 5px;margin-bottom: 10px" @click="testClick">-->
+                <!--click start-->
+                <!--</el-button>-->
+                <!--</el-row>-->
+            </div>
+
+        </div>
 
     </div>
-    <div class="process-bar">
-      <el-progress :show-text="false" :percentage="process" :stroke-width="18"></el-progress>
-    </div>
-    <div class="button-row" round>
-      <div class="Button">
-        <el-dropdown split-button type="info" @click="dropDownClick" @command="dropDownCommand">
-          In a Minute
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="1">In a Minute</el-dropdown-item>
-            <el-dropdown-item command="5">In 5 Minute</el-dropdown-item>
-            <el-dropdown-item command="15">In 15 Minute</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-      <div class="Button">
-        <el-button type="info" size="medium"> Done</el-button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
   import Timer from '../../utils/timer'
+  import {EventBus} from "../../utils/event-bus";
 
   export default {
     data() {
@@ -41,7 +57,7 @@
     },
     computed: {
       currentRound() {
-        return this.$store.getters.currentRound;
+        return this.$store.getters.currentBreak;
       },
       timeShortBreak() {
         return this.$store.getters.timeShortBreak;
@@ -50,11 +66,11 @@
         return this.$store.getters.timeLongBreak;
       },
       currentBreak() {
-        switch (this.currentRound) {
-          case 'short-break':
-            return this.timeShortBreak;
-          case 'long-break':
-            return this.timeLongBreak;
+        if (this.currentRound === 'short-break') {
+          return this.timeShortBreak;
+        } else {
+          return this.timeLongBreak;
+
         }
       },
       timeElapsed() {
@@ -65,15 +81,14 @@
       timeRemaining() {
         const {remainingMinutes, remainingSeconds} = this.timer.getRemaining(this.currentBreak);
         if (remainingMinutes < 0) {
-          return '00:00'
+          return `00:${this.formatTime(remainingSeconds)}`
         }
         return `${this.formatTime(remainingMinutes)}:${this.formatTime(remainingSeconds)}`
       },
-      process() {
+      percentage() {
         const elapsedSeconds = this.timer.time;
         const totalSeconds = this.timer.totalSeconds;
         const percentage = parseInt(elapsedSeconds / totalSeconds * 100);
-        console.log(elapsedSeconds + '\t' + totalSeconds + '\t' + percentage)
         return percentage;
 
       }
@@ -97,21 +112,27 @@
           return time;
         }
       },
+      doneButtonClick() {
+        this.timer.setComplete()
+      },
       dropDownClick(e) {
-        console.log(e);
+        this.dropDownCommand(1);
       },
       dropDownCommand(command) {
-        console.log(command)
-        // this.$message(command)
+        const delayMins = parseInt(command)
+        EventBus.$emit('break-delay', delayMins)
       },
       initTimer() {
-        console.log("init time");
         this.createTimer(this.currentBreak)
       },
       createTimer(minutes) {
         this.timer = new Timer(minutes);
         this.startTimer()
       },
+
+      // testClick(){
+      //   this.startTimer()
+      // },
       startTimer() {
         this.timer.start();
 
@@ -120,55 +141,85 @@
   }
 </script>
 
-<style>
+<style scoped lang="scss">
+    /*html, body{*/
+        /*background-color: rgba(0,0,0,0);*/
+    /*}*/
+    .wrapper{
+        height: 100vh;
+        width: 100vw;
+        background: rgba(0,0,0,0.5);
+    }
+    p {
+        margin: 0;
+    }
 
-  .container {
-    /*position: absolute;*/
-    display: flex;
-    padding: 12px;
-    /*color: white;*/
-    flex-direction: column;
-    width: 300px;
-    height: 120px;
-    border: 1px solid black;
-    /*background: #252525;*/
-    background: #ECECEC;
+    .container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /*border: 1px solid black;*/
+        -webkit-box-shadow: 0 0 15px black;
+        border-radius: 6px;
+        background: white;
+        /*background: #252525;*/
+        /*background: #ECECEC;*/
 
-  }
+    }
 
-  .time-show {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-size: 28px;
-  }
+    .title {
+        text-align: center;
+        border-bottom: 1px solid black;
+        font-weight: bold;
+        padding: 3px 0;
+    }
 
-  .time-show p:nth-child(1) {
-    color: #409efe;
-  }
+    .content-container {
+        display: flex;
+        padding: 0 12px;
+        flex-direction: column;
+        width: 300px;
+        /*height: 330px;*/
+        height: 125px;
+    }
 
-  .time-show p:nth-child(2) {
-    color: #909399;
-  }
+    .time-show {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        font-size: 28px;
+        margin-top: 12px;
+    }
 
-  .process-bar {
-    margin-top: 20px;
-  }
+    .time-show p:nth-child(1) {
+        color: #409efe;
+    }
 
-  .button-row {
-    /*position: absolute;*/
-    /*bottom: 12px;*/
-    margin-top: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-  }
+    .time-show p:nth-child(2) {
+        color: #909399;
+    }
 
-  .button-row .Button {
+    .process-bar {
+        margin-top: 14px;
+        /*width: 250px;*/
+        /*margin: 14px auto 0;*/
+    }
 
-    /*width: 50%;*/
-    /*background: #05EC8C;*/
-  }
+    .button-row {
+        margin-top: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        float: left;
+    }
+
+    .button-row .Button {
+
+        /*width: 50%;*/
+        /*background: #05EC8C;*/
+    }
 
 </style>

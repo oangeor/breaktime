@@ -1,7 +1,7 @@
 import {app, BrowserWindow, ipcMain, Tray} from 'electron'
 
 let tray = undefined;
-let trayWindow = undefined;
+let mainWindow = undefined;
 const path = require('path');
 /**
  * Set `__static` path to static files in production
@@ -16,39 +16,53 @@ const winURL = process.env.NODE_ENV === 'development'
   : `file://${__dirname}/index.html#timer`
 
 function createWindow() {
-  trayWindow = new BrowserWindow({
-    height: 563,
+  mainWindow = new BrowserWindow({
+    height: 500,
     useContentSize: true,
-    width: 1000
+    width: 320,
+    show: false,
+    frame: false,
+    transparent: true,
+  });
+
+  mainWindow.loadURL(winURL)
+
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  });
+
+  mainWindow.on('blur', () => {
+    // mainWindow.hide();
   })
 
-  trayWindow.loadURL(winURL)
-
-  trayWindow.on('closed', () => {
-    trayWindow = null
-  })
-
-  trayWindow.on('blur', () =>{
-    // trayWindow.hide();
+  mainWindow.on('ready-to-show', () => {
+    showWindow()
+    setTimeout(() => {
+      mainWindow.hide()
+    }, 3000)
   })
 }
 
 app.on('ready', () => {
   createTray();
   createWindow();
+  // mainWindow.show()
+
 });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-})
+});
 
-// app.on('activate', () => {
-//   if (trayWindow === null) {
-//     createWindow()
-//   }
-// });
+app.on('activate', () => {
+  // if (mainWindow === null) {
+  // createWindow()
+  // }
+  mainWindow.show()
+  mainWindow.focus()
+});
 // const assetsDirectory = path.join(__static, '../')
 // createTray
 const createTray = () => {
@@ -60,17 +74,19 @@ const createTray = () => {
 
 
 const toggleWindow = () => {
-  if (trayWindow.isVisible()) {
-    trayWindow.hide()
+  if (mainWindow.isVisible()) {
+
+    mainWindow.hide()
   } else {
     showWindow();
   }
 };
 
 const getWindowPosition = () => {
-  const windowBounds = trayWindow.getBounds()
+  const windowBounds = mainWindow.getBounds()
   const trayBounds = tray.getBounds()
-
+  console.log('index tra bounds')
+  console.log(trayBounds)
   // Center window horizontally below the tray icon
   const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
 
@@ -83,13 +99,17 @@ const getWindowPosition = () => {
 
 const showWindow = () => {
   const position = getWindowPosition();
-  trayWindow.setPosition(position.x, position.y, false);
-  trayWindow.show();
-  trayWindow.focus()
+  mainWindow.setPosition(position.x, position.y, false);
+  mainWindow.show();
+  mainWindow.focus()
 }
 
 ipcMain.on('show-window', () => {
   showWindow()
+});
+
+ipcMain.on('get-tray-bounds', (event, arg) => {
+  event.returnValue = tray.getBounds()
 });
 /**
  * Auto Updater
