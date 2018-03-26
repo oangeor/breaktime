@@ -8,6 +8,7 @@ const state = {
   timeShortBreak: parseInt(localStore.get('timeShortBreak')),
   timeWork: parseInt(localStore.get('timeWork')),
   currentBreak: 'work',//show-break long-break
+  mainSwitch: true,
 };
 
 const getters = {
@@ -28,6 +29,9 @@ const getters = {
   },
   workRounds() {
     return state.workRounds
+  },
+  mainSwitch() {
+    return state.mainSwitch;
   }
 };
 
@@ -51,6 +55,10 @@ const mutations = {
         break;
     }
 
+  },
+
+  SET_MAIN_SWITCH(state, payload) {
+    state.mainSwitch = payload
   },
 
 
@@ -94,6 +102,11 @@ const actions = {
     },
     setCurrentBreak({commit}, payload) {
       commit('SET_CURRENT_BREAK', payload)
+    },
+
+    setMainSwitch({commit}, payload){
+      commit('SET_MAIN_SWITCH', payload);
+
     }
     // resetTime({commit}) {
     //   const timeLongBreak = localStore.get('timeLongBreak')

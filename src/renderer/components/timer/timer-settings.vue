@@ -15,7 +15,7 @@
 
         <el-row style="padding: 15px">
             <el-col :span="10" :offset="16"><span style="font-size: 14px">Switch:</span>
-                <el-switch v-model="switchValue" :width="50" style="padding-left: 10px"></el-switch>
+                <el-switch v-model="switchValue" :width="50" style="padding-left: 10px" @change="switchChange"></el-switch>
 
             </el-col>
 
@@ -55,7 +55,7 @@
         sliderShortBreakValue: this.$store.getters.timeShortBreak,
         sliderLongBreakValue: this.$store.getters.timeLongBreak,
         sliderRound: this.$store.getters.workRounds,
-        swtichValue: true,
+        switchValue: this.$store.getters.mainSwitch,
         workSettingChanged: false,
       }
     },
@@ -69,6 +69,9 @@
       },
       clickClose() {
         EventBus.$emit('settings-done', this.workSettingChanged)
+      },
+      switchChange(val){
+        this.$store.dispatch('setMainSwitch', val);
       },
       settingChange(caseName, val) {
         switch (caseName) {
