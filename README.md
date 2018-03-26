@@ -1,6 +1,6 @@
 # breaktime
 
-> An electron-vue project
+>An electron project that inspired by [breaktimeapp](http://breaktimeapp.com/)
 
 #### Build Setup
 
