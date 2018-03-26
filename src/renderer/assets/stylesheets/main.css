@@ -51,6 +51,14 @@
 }
 
 
+.el-button:hover{
+  background-color: white;
+  border-color: white;
+  color: #606266;
+}
+
+
+
 /*.el-button--info{*/
   /*background-color: black;*/
 /*}*/
