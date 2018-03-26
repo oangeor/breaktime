@@ -17,12 +17,13 @@ const winURL = process.env.NODE_ENV === 'development'
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    height: 500,
-    useContentSize: true,
-    width: 320,
+    // height: 10,
+    // useContentSize: true,
+    // width: 350,
     show: false,
     frame: false,
     transparent: true,
+    // useContentSize:true,
   });
 
   mainWindow.loadURL(winURL)
@@ -31,9 +32,6 @@ function createWindow() {
     mainWindow = null
   });
 
-  mainWindow.on('blur', () => {
-    // mainWindow.hide();
-  })
 
   mainWindow.on('ready-to-show', () => {
     showWindow()
@@ -46,7 +44,6 @@ function createWindow() {
 app.on('ready', () => {
   createTray();
   createWindow();
-  // mainWindow.show()
 
 });
 
@@ -57,11 +54,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  // if (mainWindow === null) {
-  // createWindow()
-  // }
-  mainWindow.show()
-  mainWindow.focus()
+  showWindow()
 });
 // const assetsDirectory = path.join(__static, '../')
 // createTray
@@ -78,6 +71,7 @@ const toggleWindow = () => {
 
     mainWindow.hide()
   } else {
+    // mainWindow.setSize()
     showWindow();
   }
 };
@@ -100,6 +94,7 @@ const getWindowPosition = () => {
 const showWindow = () => {
   const position = getWindowPosition();
   mainWindow.setPosition(position.x, position.y, false);
+  mainWindow.setSize(350, 100);
   mainWindow.show();
   mainWindow.focus()
 }
@@ -111,6 +106,9 @@ ipcMain.on('show-window', () => {
 ipcMain.on('get-tray-bounds', (event, arg) => {
   event.returnValue = tray.getBounds()
 });
+
+
+
 /**
  * Auto Updater
  *

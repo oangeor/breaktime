@@ -1,12 +1,8 @@
 <template>
     <div class="container">
-        <!--<timer-work v-if="currentWindow==='work-window'" :delayMins="delayMins"/>-->
-        <!--<timer-settings v-else-if="currentWindow==='settings-window'"/>-->
-        <!--<timer-break v-else-if="currentWindow==='break-window'"/>-->
-
-        <!--<timer-work></timer-work>-->
-        <timer-settings></timer-settings>
-        <!--<timer-break></timer-break>-->
+        <timer-work v-if="currentWindow==='work-window'" :delayMins="delayMins"/>
+        <timer-settings v-else-if="currentWindow==='settings-window'"/>
+        <timer-break v-else-if="currentWindow==='break-window'"/>
     </div>
 </template>
 
@@ -20,35 +16,13 @@
 
   const bWindow = new BrowserWindow();
 
-  // import timerBreakDial from './timer-break-dial'
-  // const win = require('electron').remote.getCurrentWindow();
-  // win.setSize(100,100,true);
-  // const workWindow = {
-  //   winWidth: 100,
-  //   winHeight: 100,
-  // };
-  // const settingsWindow = {
-  //   winWidth: 100,
-  //   winHeight: 100,
-  // };
-  // const settingsWindow={
-  //   winWidth: 100,
-  //   winHeight: 100,
-  // };
-
-
-  // function settingWindow(opts) {
-  // const win = require('electron').remote.getCurrentWindow();
-  // win.setSize(opts.winWidth, opts.winHeight, true);
-  // }
-
   export default {
     data() {
       return {
         enableSwitch: true,
         sliderValue: 50,
         currentWindow: 'work-window',
-        delayMins:null
+        delayMins: null
       }
     },
     components: {
@@ -62,22 +36,6 @@
       }
     },
     mounted() {
-      // EventBus.$on('set-current-break', (payload) => {
-      //   console.log(payload)
-      //   switch (payload) {
-      //     case 'work-window':
-      //       bWindow.resetWorkWindow()
-      //       // settingWindow(workWindow)
-      //       break;
-      //     case 'settings-window':
-      //       this.currentWindow = 'settings-window'
-      //       bWindow.resetSettingsWindow();
-      //       break;
-      //     case 'break-window':
-      //       break
-      //   }
-      // });
-
       // 使用eventbus 为了之后拆分到不同 component 通信
       EventBus.$on('open-settings', () => {
         this.currentWindow = 'settings-window'
@@ -89,8 +47,6 @@
       });
 
       EventBus.$on('get-current-break', () => {
-        // this.currentWindow = 'break-window'
-        // bWindow.resetBreakWindow();
         return this.$store.getters.currentBreak;
       });
 
@@ -106,16 +62,23 @@
         bWindow.resetWorkWindow();
       });
 
-      EventBus.$on('settings-done', (changed)=>{
-        if(changed){
+      EventBus.$on('settings-done', (changed) => {
+        if (changed) {
           // this.initTimer()
-        }else {
+        } else {
           // this.timer.resume()
         }
         this.currentWindow = 'work-window'
         bWindow.resetWorkWindow();
       });
-
+      EventBus.$on('window-blur', () => {
+        console.log('window-blur')
+        console.log(this.currentWindow)
+        if (this.currentWindow === 'settings-window') {
+          EventBus.$emit('open-work')
+        }
+        ;
+      });
       EventBus.$on('timer-completed', () => {
         const currentBreak = this.$store.getters.currentBreak;
         const round = this.$store.getters.round;
@@ -142,20 +105,3 @@
   }
 </script>
 
-<style>
-    html, body {
-        /*overflow: hidden !important;*/
-    }
-
-    /*.dial-time {*/
-    /*border: 1px solid red;*/
-    /*padding: 12px;*/
-    /*font-size: 50px;*/
-    /*!*display: flex;*!*/
-    /*!*flex-direction: column;*!*/
-    /*}*/
-
-    /**{*/
-    /*line-height: 1.15;*/
-    /*}*/
-</style>

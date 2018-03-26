@@ -3,8 +3,8 @@ import {EventBus} from "./event-bus";
 
 
 const workWindow = {
-  winWidth: 100,
-  winHeight: 100,
+  winWidth: 350,
+  winHeight: 150,
 };
 const settingsWindow = {
   winWidth: 100,
@@ -21,17 +21,21 @@ export default class {
     //   e.returnValue = true;
     // };
 
+    win.on('blur', () => {
+      EventBus.$emit('window-blur')
+    })
+
   }
 
-  showWindow(){
+  showWindow() {
     if (!this.win.isVisible()) {
       this.win.show();
       this.win.focus();
     }
   }
+
   resetWindow({width, height}) {
-    this.win.setSize(width, height);
-    this.showWindow()
+    this.win.setSize(width, height, false);
   }
 
   moveUnderTrayIcon() {
@@ -58,7 +62,8 @@ export default class {
     this.resetWindow({
       width: windowBounds.width,
       height: windowBounds.height,
-    })
+    });
+    this.win.hide()
   }
 
   resetBreakWindow() {
@@ -69,13 +74,10 @@ export default class {
   resetSettingsWindow() {
 
     this.resetWindow({
-      width: 522,
-      height: 252,
+      width: 505,
+      height: 280,
     });
-    this.win.maximize()
-
     this.moveScreenCenter()
-
   }
 }
 

@@ -3,8 +3,12 @@
         <el-row type="flex" align="middle">
             <el-col :span="6" class="setting-name"><p>{{settingName}}</p></el-col>
             <el-col :span="12">
-                <el-slider @change="sliderChange" v-model="value" :max="max" :show-input="true"
-                           :show-input-controls="false" :settingCase="settingCase"></el-slider>
+                <el-slider @change="sliderChange"
+                           v-model="value"
+                           :max="max"
+                           :show-input="true"
+                           :show-input-controls="false"
+                           :settingCase="settingCase"/>
             </el-col>
             <el-col :span="2" style="margin-left: 8px">
                 <span>{{unit}}</span>
@@ -20,7 +24,6 @@
         value: this.sliderValue
       }
     },
-    computed: {},
     props: {
       settingName: String,
       sliderValue: Number,
@@ -43,7 +46,6 @@
     .setting-name {
         padding-right: 15px;
         line-height: 0.4em;
-
         p {
             text-align: right;
         }

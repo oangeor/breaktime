@@ -1,64 +1,58 @@
-
 /*.el-progress-bar__inner{*/
-  /*background-color: red;*/
+/*background-color: red;*/
 /*}*/
 
-.el-button--medium{
-  border-radius: 15px;
-  width: 120px;
-  height: 38.2px;
+.el-button--medium {
+    border-radius: 15px;
+    width: 120px;
+    height: 38.2px;
 }
 
-.el-dropdown{
-  overflow: hidden;
-  border-radius: 15px;
+.el-dropdown {
+    overflow: hidden;
+    border-radius: 15px;
 }
 
-.el-slider__bar{
-  display: none;
+.el-slider__bar {
+    display: none;
 }
 
-.el-slider__runway{
-  background-color: #b8b8b8;
-  height: 3px;
+.el-slider__runway {
+    background-color: #b8b8b8;
+    height: 3px;
 }
 
-/*.el-slider__runway .show-input{*/
-/*margin-right: 30px;*/
-/*}*/
-.el-slider__runway.show-input
-{
-  margin-right: 50px;
-
-}
-.el-slider__button{
-  border: 1px solid #b8b8b8;
-}
-
-.el-slider__input{
-  width: 40px;
-}
-
-.el-slider__input .el-input--small .el-input__inner{
-  height: 25px;
-  padding: 0 5px;
+.el-slider__runway.show-input {
+    margin-right: 50px;
 
 }
 
-
-.el-popper{
-  margin-bottom: 12px;
+.el-slider__button {
+    border: 1px solid #b8b8b8;
 }
 
-
-.el-button:hover{
-  background-color: white;
-  border-color: white;
-  color: #606266;
+.el-slider__input {
+    width: 40px;
 }
 
+.el-slider__input .el-input--small .el-input__inner {
+    height: 25px;
+    padding: 0 5px;
 
+}
 
-/*.el-button--info{*/
-  /*background-color: black;*/
-/*}*/
+.el-popper {
+    margin-bottom: 12px;
+}
+
+.el-button:hover {
+    background-color: white;
+    border-color: white;
+    color: #606266;
+}
+
+body {
+    overflow: hidden !important;
+    font-family: "PingFang SC", HelveticaNeue, 'Helvetica Neue', 'Lucida Grande', Arial, sans-serif;
+}
+

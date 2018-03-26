@@ -15,8 +15,7 @@
 
         <el-row style="padding: 15px">
             <el-col :span="10" :offset="16"><span style="font-size: 14px">Switch:</span>
-                <el-switch v-model="switchValue" :width="50" style="padding-left: 10px" @change="switchChange"></el-switch>
-
+                <el-switch v-model="switchValue" :width="50" style="padding-left: 10px" @change="switchChange"/>
             </el-col>
 
         </el-row>
@@ -70,7 +69,7 @@
       clickClose() {
         EventBus.$emit('settings-done', this.workSettingChanged)
       },
-      switchChange(val){
+      switchChange(val) {
         this.$store.dispatch('setMainSwitch', val);
       },
       settingChange(caseName, val) {
@@ -103,13 +102,7 @@
         width: 500px;
         box-sizing: content-box;
         background: #ECECEC;
-        font-family: "PingFang SC", HelveticaNeue, 'Helvetica Neue', 'Lucida Grande', Arial, sans-serif;
-        /*-webkit-box-shadow: 0 0 5px #777777;*/
         border-radius: 15px;
-
-        /*background: -webkit-linear-gradient(top, #ebebeb, #d5d5d5)*/
-        /*border: 1px solid black;*/
-        /*border-radius: 6px;*/
     }
 
     .title {

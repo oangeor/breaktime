@@ -10,11 +10,9 @@
 
                 <el-col :span="16">
                     <el-row type="flex" align="middle">
-                        <el-col :span="18" style="font-size: 14px;padding: 1px">{{timeUnit}} until break</el-col>
+                        <el-col :span="18" style="font-size: 16px;padding: 1px">{{timeUnit}} until break</el-col>
                         <el-col :span="6" class="switch">
-                            <el-switch
-                                    v-model='enableSwitch'
-                            ></el-switch>
+                            <el-switch v-model='switchValue' @change="switchChange"/>
                         </el-col>
 
                     </el-row>
@@ -28,11 +26,6 @@
                         </el-col>
 
                     </el-row>
-                    <!--<el-row>-->
-                    <!--<el-button size="medium" style=" font-size: 13px;padding: 5px;margin-bottom: 10px" @click="testClick">-->
-                    <!--click start-->
-                    <!--</el-button>-->
-                    <!--</el-row>-->
                 </el-col>
             </el-row>
 
@@ -44,57 +37,23 @@
 <script>
   import Timer from '../../utils/timer'
   import {EventBus} from "../../utils/event-bus";
-  import store from '../../store'
-  // function createSettingsW() {
 
-  // }
-  // const BrowserWindow = require('electron').remote.BrowserWindow
-  // const path = require('path')
-  // let settingsWin = null;
-  // const createSettingsWin = () => {
-  //   const winURL = process.env.NODE_ENV === 'development'
-  //     ? `http://localhost:9080#settings`
-  //     : `file://${__dirname}/index.html#settings`
-  //   let win = new BrowserWindow({
-  //     width: 500,
-  //     height: 280,
-  //     backgroundColor: '#ECECEC',
-  //     minimizable: false,
-  //     maximizable: false,
-  //     resizable: false,
-  //     show: false
-  //   });
-  //   win.on('close', function () {
-  //     win = null
-  //   });
-  //   win.on('blur', () => {
-  //     // eventbus.commit
-  //     // this.$store.dispatch('resetTime');
-  //     // const newTimeWork = this.workMinutes;
-  //     // this.initTimer();
-  //   });
-  //   win.on('resize', () => {
-  //     const message = `大小: ${win.getSize()} - 位置: ${win.getPosition()}`;
-  //     console.log(message)
-  //   });
-  //   win.loadURL(winURL);
-  //   return win;
-  // };
   export default {
     props: ['delayMins'],
     data() {
       return {
         timer: null,
-        enableSwitch: true,
         timeUnit: 'minutes',
         sliderValue: 100,
         timeInt: null,
+        switchValue: true,
       }
     },
     created() {
       this.initTimer();
     },
     mounted() {
+      this.switchValue = this.$store.getters.mainSwitch;
       this.listenChange()
     },
     watch: {
@@ -103,30 +62,18 @@
         if (this.timeInt) {
           clearInterval(this.timerInt);
         }
-        if (this.sliderValue >= 60){
+        if (this.sliderValue >= 60) {
           this.timeUnit = "minutes"
-        }else{
+        } else {
           this.timeUnit = "seconds"
         }
         this.timer.resetElapsedTime(this.sliderValue)
       }
     },
     computed: {
-      timeUnite(){
-
+      mainSwitch() {
+        return this.$store.getters.mainSwitch
       },
-      // sliderValue() {
-      //   return this.timeRemainingSeconds;
-      // },
-
-      // sliderValue: {
-      //   get: function () {
-      //     console.log("get...")
-      //     return this.timeRemainingSeconds;
-      //   },
-      //   set: function () {
-      //   }
-      // },
 
       timeRemainingSeconds() {
         let remainingSeconds = this.timer.getRemainingSeconds()
@@ -134,6 +81,8 @@
       },
 
       timeRemaining() {
+        console.log("this timer")
+        console.log(this.timer)
         const {remainingMinutes, remainingSeconds} = this.timer.getRemaining(this.workMinutes);
         if (remainingMinutes <= 0) {
           this.timeUnit = 'seconds';
@@ -152,13 +101,20 @@
       }
     },
     methods: {
+      switchChange(val) {
+        this.$store.dispatch('setMainSwitch', val);
+        if (val === true) {
+          this.initTimer()
+        } else {
+          this.pauseTimer()
+        }
+      },
       listenChange() {
         this.timeInt = setInterval(() => {
           this.sliderValue = this.timeRemainingSeconds
         }, 100)
       },
       sliderChange() {
-        console.log("listen ...change ...")
         this.listenChange()
       },
       formatTime(time) {
@@ -170,12 +126,21 @@
           return time;
         }
       },
+      pauseTimer() {
+        this.timer.pause()
+      },
       createTimer(minutes) {
         this.timer = new Timer(minutes);
+
         this.startTimer()
       },
       startTimer() {
-        this.timer.start();
+        console.log(this.switchValue)
+        if (this.switchValue === true) {
+          console.log("888");
+          console.log(this.timer.time)
+          this.timer.start();
+        }
 
       },
       pauseTimer() {
@@ -186,12 +151,11 @@
           this.createTimer(this.delayMins)
         } else {
           this.createTimer(this.workMinutes)
-
         }
       },
+
       settingsClick() {
-        // EventBus.$emit('set-current-break','settings-window')
-        this.timer.pause()
+        this.pauseTimer()
         EventBus.$emit('open-settings')
 
       }
@@ -204,6 +168,7 @@
 <style scoped lang="scss">
 
     .container {
+        height: 120px;
         width: 320px;
     }
 
@@ -214,7 +179,6 @@
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
         border-bottom: 10px solid white;
-        /*-webkit-box-shadow: 0 0 10px #777777;*/
 
     }
 
@@ -223,10 +187,6 @@
         border-radius: 15px;
         -webkit-box-shadow: 0 0 5px #777777;
         background-color: white;
-    }
-
-    .el-col {
-        /*border: 1px solid red;*/
     }
 
     .dial-time {

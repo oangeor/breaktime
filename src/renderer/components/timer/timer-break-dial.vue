@@ -93,15 +93,7 @@
 
       }
     },
-    watch: {
-      // selectValue(val) {
-      //   console.log(val);
-      // }
-    },
-    mounted() {
-    },
     methods: {
-      // format
 
       formatTime(time) {
         if (time === 60) {
@@ -114,6 +106,7 @@
       },
       doneButtonClick() {
         this.timer.setComplete()
+        EventBus.$emit('open-work')
       },
       dropDownClick(e) {
         this.dropDownCommand(1);
@@ -142,14 +135,12 @@
 </script>
 
 <style scoped lang="scss">
-    /*html, body{*/
-        /*background-color: rgba(0,0,0,0);*/
-    /*}*/
-    .wrapper{
+    .wrapper {
         height: 100vh;
         width: 100vw;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
     }
+
     p {
         margin: 0;
     }
@@ -159,12 +150,9 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /*border: 1px solid black;*/
         -webkit-box-shadow: 0 0 15px black;
         border-radius: 6px;
         background: white;
-        /*background: #252525;*/
-        /*background: #ECECEC;*/
 
     }
 
@@ -180,7 +168,6 @@
         padding: 0 12px;
         flex-direction: column;
         width: 300px;
-        /*height: 330px;*/
         height: 125px;
     }
 
@@ -202,8 +189,6 @@
 
     .process-bar {
         margin-top: 14px;
-        /*width: 250px;*/
-        /*margin: 14px auto 0;*/
     }
 
     .button-row {
@@ -214,12 +199,6 @@
         justify-content: space-between;
         width: 100%;
         float: left;
-    }
-
-    .button-row .Button {
-
-        /*width: 50%;*/
-        /*background: #05EC8C;*/
     }
 
 </style>
