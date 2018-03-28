@@ -94,7 +94,7 @@ const getWindowPosition = () => {
 const showWindow = () => {
   const position = getWindowPosition();
   mainWindow.setPosition(position.x, position.y, false);
-  mainWindow.setSize(350, 100);
+  mainWindow.setSize(320, 100);
   mainWindow.show();
   mainWindow.focus()
 }
