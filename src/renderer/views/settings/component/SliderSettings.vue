@@ -18,37 +18,36 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        value: this.sliderValue
+export default {
+  data() {
+    return {
+      value: this.sliderValue
+    };
+  },
+  props: {
+    settingName: String,
+    sliderValue: Number,
+    max: Number,
+    settingCase: String,
+    unit: String
+  },
+  methods: {
+    sliderChange(val) {
+      if (val <= 0) {
+        this.value = 1;
       }
-    },
-    props: {
-      settingName: String,
-      sliderValue: Number,
-      max: Number,
-      settingCase: String,
-      unit: String,
-    },
-    methods: {
-      sliderChange(val) {
-        if (val <= 0) {
-          this.value = 1;
-        }
-        this.$emit('change', this.settingCase, this.value)
-      }
+      this.$emit("change", this.settingCase, this.value);
     }
   }
+};
 </script>
 
 <style lang="scss" scoped>
-    .setting-name {
-        padding-right: 15px;
-        line-height: 0.4em;
-        p {
-            text-align: right;
-        }
-
-    }
+.setting-name {
+  padding-right: 15px;
+  line-height: 0.4em;
+  p {
+    text-align: right;
+  }
+}
 </style>

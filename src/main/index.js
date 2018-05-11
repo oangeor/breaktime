@@ -1,8 +1,11 @@
-import {app, BrowserWindow, ipcMain, Tray} from 'electron'
+import { app, BrowserWindow, ipcMain, Tray } from 'electron'
 
-let tray = undefined;
-let mainWindow = undefined;
 const path = require('path');
+
+let tray;
+let mainWindow; // main window also known as settings window
+let workWindow;
+let breakWindow;
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -11,103 +14,171 @@ if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-const winURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080#timer`
-  : `file://${__dirname}/index.html#timer`
+const mainWinURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080#settings`
+  : `file://${__dirname}/index.html`
 
-function createWindow() {
+const workWinURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080#work`
+  : `file://${__dirname}/index.html`
+
+const breakWinURL = process.env.NODE_ENV === 'development'
+  ? `http://localhost:9080#break`
+  : `file://${__dirname}/index.html`
+
+
+
+function createMainWindow() {
+  /*
+  * Init window options
+  */
   mainWindow = new BrowserWindow({
-    // height: 10,
-    // useContentSize: true,
-    // width: 350,
+    height: 900,
+    width: 500,
     show: false,
-    frame: false,
-    transparent: true,
-    // useContentSize:true,
+    frame: true,
+    transparent: false,
+    closable: false,
+    maximizable: false,
+    minimizable: false,
   });
-
-  mainWindow.loadURL(winURL)
-
-  mainWindow.on('closed', () => {
-    mainWindow = null
-  });
-
-
-  mainWindow.on('ready-to-show', () => {
-    showWindow()
-    setTimeout(() => {
-      mainWindow.hide()
-    }, 3000)
+  console.log(mainWinURL)
+  mainWindow.loadURL(mainWinURL)
+  // mainWindow.setPosition(0, 0, false);
+  mainWindow.on('blur', () => {
+    mainWindow.hide()
   })
+
 }
 
-app.on('ready', () => {
-  createTray();
-  createWindow();
 
-});
+function createWorkWindow() {
+  workWindow = new BrowserWindow({
+    height: 100,
+    width: 320,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    show: false
+  })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-});
+  workWindow.loadURL(workWinURL)
+  workWindow.setPosition(600, 0, false);
+}
 
-app.on('activate', () => {
-  showWindow()
-});
-// const assetsDirectory = path.join(__static, '../')
-// createTray
+function createBreakWindow() {
+  breakWindow = new BrowserWindow({
+    frame: false,
+    transparent: true,
+    show: false,
+    alwaysOnTop: true
+  })
+  breakWindow.loadURL(breakWinURL)
+  breakWindow.maximize()
+}
+
+
+
 const createTray = () => {
   tray = new Tray(path.join(__static, 'tray_icon.png'));
   tray.on('click', function (event) {
+    if (breakWindow.isVisible()) {
+      return // 
+    }
     toggleWindow();
   })
 }
 
 
 const toggleWindow = () => {
-  if (mainWindow.isVisible()) {
-
-    mainWindow.hide()
+  if (workWindow.isVisible()) {
+    workWindow.hide()
   } else {
-    // mainWindow.setSize()
-    showWindow();
+    showWorkWindow();
+    mainWindow.hide()
   }
 };
 
 const getWindowPosition = () => {
-  const windowBounds = mainWindow.getBounds()
+  const windowBounds = workWindow.getBounds()
   const trayBounds = tray.getBounds()
-  console.log('index tra bounds')
-  console.log(trayBounds)
   // Center window horizontally below the tray icon
   const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
-
   // Position window 4 pixels vertically below the tray icon
   const y = Math.round(trayBounds.y + trayBounds.height + 3)
-
-  return {x: x, y: y}
+  return { x: x, y: y }
 }
 
 
-const showWindow = () => {
+const showWorkWindow = () => {
   const position = getWindowPosition();
-  mainWindow.setPosition(position.x, position.y, false);
-  mainWindow.setSize(320, 100);
-  mainWindow.show();
-  mainWindow.focus()
+  workWindow.setPosition(position.x, position.y, false);
+  workWindow.show();
+  workWindow.focus()
 }
 
-ipcMain.on('show-window', () => {
-  showWindow()
+
+
+/**
+ * App 
+ */
+app.on('ready', () => {
+  createTray();
+  createMainWindow();
+  createWorkWindow();
+  createBreakWindow();
 });
 
-ipcMain.on('get-tray-bounds', (event, arg) => {
-  event.returnValue = tray.getBounds()
+// app.on('window-all-closed', () => {
+//   if (process.platform !== 'darwin') {
+//     app.quit()
+//   }
+// });
+
+app.on('activate', () => {
+  // showWindow()
 });
 
 
+ipcMain.on('hide-settings-window', () => {
+  console.log("stop close.......")
+  mainWindow.hide()
+})
+
+ipcMain.on('quit-app', () => {
+  app.exit();
+})
+
+
+ipcMain.on('timer-completed', (event, payload) => {
+  mainWindow.webContents.send('timer-completed', payload)
+})
+
+ipcMain.on('settings-start', () => {
+  mainWindow.show()
+  workWindow.hide()
+})
+
+ipcMain.on('break-start', (event, breakMin) => {
+  console.log("...main  break start")
+  breakWindow.show()
+  workWindow.hide()
+  breakWindow.webContents.send('break-start', breakMin)
+})
+
+ipcMain.on('work-start', (event, workMin) => {
+  console.log("...main  work start")
+  // workWindow.show()
+  breakWindow.hide()
+  workWindow.webContents.send('work-start', workMin)
+})
+
+ipcMain.on('break-delay', (event, delayMin) => {
+  console.log("main break-delay.....")
+  breakWindow.hide()
+  workWindow.webContents.send('break-delay', delayMin)
+  mainWindow.webContents.send('break-delay')
+})
 
 /**
  * Auto Updater
