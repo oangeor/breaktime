@@ -41,3 +41,14 @@ npm run build
 ```
 
 ---
+
+
+changelog:
+
+* verson1.0 用的SPA, 三个页面共用一个window，vuex 来控制三个页面状态，通过EventBus进行页面间消息传递。
+ * 每个页面展示时window的大小样式都不一样，所以经常会根据当前页面类型来改变window的size，transparent 在render process 里改变window 属性不太友好
+
+* version2.0 每个页面一个独立window，单独的render process进行渲染
+	* 每个页面单独process，这样vuex 就没办法数据共享，考虑过用 electron 的global object来存储，想了下不够友好
+	* 索性只留一个主页面mainWindow保留数据，其余页面的状态和数据都被main 来控制，mainWindow 通过消息控制企业两个页面
+	* 数据持久化不自己造轮子localstore，用开源的electron-store来存储，本质也是读写json文件存储
