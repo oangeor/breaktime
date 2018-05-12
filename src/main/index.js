@@ -1,11 +1,11 @@
 import { app, BrowserWindow, ipcMain, Tray } from 'electron'
 
-const path = require('path');
+const path = require('path')
 
-let tray;
-let mainWindow; // main window also known as settings window
-let workWindow;
-let breakWindow;
+let tray
+let mainWindow // main window also known as settings window
+let workWindow
+let breakWindow
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -41,10 +41,10 @@ function createMainWindow() {
     closable: false,
     maximizable: false,
     minimizable: false,
-  });
+  })
   console.log(mainWinURL)
   mainWindow.loadURL(mainWinURL)
-  // mainWindow.setPosition(0, 0, false);
+  // mainWindow.setPosition(0, 0, false)
   mainWindow.on('blur', () => {
     mainWindow.hide()
   })
@@ -63,7 +63,7 @@ function createWorkWindow() {
   })
 
   workWindow.loadURL(workWinURL)
-  workWindow.setPosition(600, 0, false);
+  workWindow.setPosition(600, 0, false)
 }
 
 function createBreakWindow() {
@@ -71,7 +71,7 @@ function createBreakWindow() {
     frame: false,
     transparent: true,
     show: false,
-    alwaysOnTop: true
+    // alwaysOnTop: true
   })
   breakWindow.loadURL(breakWinURL)
   breakWindow.maximize()
@@ -80,12 +80,12 @@ function createBreakWindow() {
 
 
 const createTray = () => {
-  tray = new Tray(path.join(__static, 'tray_icon.png'));
+  tray = new Tray(path.join(__static, 'tray_icon.png'))
   tray.on('click', function (event) {
     if (breakWindow.isVisible()) {
       return // 
     }
-    toggleWindow();
+    toggleWindow()
   })
 }
 
@@ -94,10 +94,10 @@ const toggleWindow = () => {
   if (workWindow.isVisible()) {
     workWindow.hide()
   } else {
-    showWorkWindow();
+    showWorkWindow()
     mainWindow.hide()
   }
-};
+}
 
 const getWindowPosition = () => {
   const windowBounds = workWindow.getBounds()
@@ -111,9 +111,9 @@ const getWindowPosition = () => {
 
 
 const showWorkWindow = () => {
-  const position = getWindowPosition();
-  workWindow.setPosition(position.x, position.y, false);
-  workWindow.show();
+  const position = getWindowPosition()
+  workWindow.setPosition(position.x, position.y, false)
+  workWindow.show()
   workWindow.focus()
 }
 
@@ -123,21 +123,23 @@ const showWorkWindow = () => {
  * App 
  */
 app.on('ready', () => {
-  createTray();
-  createMainWindow();
-  createWorkWindow();
-  createBreakWindow();
-});
+  // createTray()
+  // createMainWindow()
+  // createWorkWindow()
+  createBreakWindow()
+
+  breakWindow.show()
+})
 
 // app.on('window-all-closed', () => {
 //   if (process.platform !== 'darwin') {
 //     app.quit()
 //   }
-// });
+// })
 
 app.on('activate', () => {
   // showWindow()
-});
+})
 
 
 ipcMain.on('hide-settings-window', () => {
@@ -146,7 +148,7 @@ ipcMain.on('hide-settings-window', () => {
 })
 
 ipcMain.on('quit-app', () => {
-  app.exit();
+  app.exit()
 })
 
 

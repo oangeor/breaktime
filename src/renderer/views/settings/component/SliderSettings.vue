@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       value: this.sliderValue
-    };
+    }
   },
   props: {
     settingName: String,
@@ -34,12 +34,12 @@ export default {
   methods: {
     sliderChange(val) {
       if (val <= 0) {
-        this.value = 1;
+        this.value = 1
       }
-      this.$emit("change", this.settingCase, this.value);
+      this.$emit("change", this.settingCase, this.value)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

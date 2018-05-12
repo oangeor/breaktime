@@ -37,101 +37,97 @@
 </template>
 
 <script>
-import Timer from "../../utils/timer";
-import { EventBus } from "../../utils/event-bus";
-const { ipcRenderer } = require("electron");
+import Timer from "../../utils/timer"
+import { EventBus } from "../../utils/event-bus"
+const { ipcRenderer } = require("electron")
 
 export default {
   data() {
     return {
       timer: null
-    };
+    }
   },
   created() {
     ipcRenderer.on("break-start", (event, breakMin) => {
-      console.log("break-start breakmins is ", breakMin);
-      this.createTimer(breakMin);
-    });
+      this.createTimer(breakMin)
+    })
     EventBus.$on("timer-completed", () => {
-      // console.log("timer-completed!!!")
-      ipcRenderer.send("timer-completed", "break");
-      // this.resetTimer();
-    });
+      ipcRenderer.send("timer-completed", "break")
+    })
   },
   computed: {
     timeElapsed() {
       if (!this.timer) {
-        return "XXX";
+        return "XXX"
       }
-      const { elapsedMinutes, elapsedSeconds } = this.timer.getElapsed();
+      const { elapsedMinutes, elapsedSeconds } = this.timer.getElapsed()
       return `${this.formatTime(elapsedMinutes)}:${this.formatTime(
         elapsedSeconds
-      )}`;
+      )}`
     },
-
     timeRemaining() {
       if (!this.timer) {
-        return "XXX";
+        return "XXX"
       }
-      const { remainingMinutes, remainingSeconds } = this.timer.getRemaining();
-      console.log(remainingMinutes, remainingSeconds);
+      const { remainingMinutes, remainingSeconds } = this.timer.getRemaining()
+      console.log(remainingMinutes, remainingSeconds)
       if (remainingMinutes < 0) {
-        return `00:${this.formatTime(remainingSeconds)}`;
+        return `00:${this.formatTime(remainingSeconds)}`
       }
       return `${this.formatTime(remainingMinutes)}:${this.formatTime(
         remainingSeconds
-      )}`;
+      )}`
     },
     percentage() {
       if (!this.timer) {
-        return 0;
+        return 0
       }
-      const elapsedSeconds = this.timer.time;
-      const totalSeconds = this.timer.totalSeconds;
-      const percentage = parseInt(elapsedSeconds / totalSeconds * 100);
-      return percentage;
+      const elapsedSeconds = this.timer.time
+      const totalSeconds = this.timer.totalSeconds
+      const percentage = parseInt(elapsedSeconds / totalSeconds * 100)
+      return percentage
     }
   },
   methods: {
     formatTime(time) {
       if (time === 60) {
-        return "00";
+        return "00"
       } else if (time < 10) {
-        return `0${time}`;
+        return `0${time}`
       } else {
-        return time;
+        return time
       }
     },
     doneButtonClick() {
-      this.timer.setComplete();
+      this.timer.setComplete()
     },
     dropDownClick(e) {
-      this.dropDownCommand(e);
+      this.dropDownCommand(e)
     },
     dropDownCommand(command) {
-      const delayMin = parseInt(command);
-      console.log("dropdwon command minute", delayMin);
-      ipcRenderer.send("break-delay", delayMin);
-      this.pauseTimer();
+      const delayMin = parseInt(command)
+      console.log("dropdwon command minute", delayMin)
+      ipcRenderer.send("break-delay", delayMin)
+      this.pauseTimer()
     },
     createTimer(minutes) {
       this.resetTimer() // clear previouse timers
-      this.timer = new Timer(minutes);
-      this.startTimer();
+      this.timer = new Timer(minutes)
+      this.startTimer()
     },
     startTimer() {
-      this.timer.start();
+      this.timer.start()
     },
     pauseTimer() {
-      this.timer.pause();
+      this.timer.pause()
     },
     resetTimer() {
       if (this.timer) {
-        this.timer.reset();
+        this.timer.reset()
       }
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
