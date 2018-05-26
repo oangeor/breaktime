@@ -34,9 +34,9 @@
 </template>
 
 <script>
-import Timer from "../../utils/timer";
-import { EventBus } from "../../utils/event-bus";
-import { ipcRenderer } from "electron";
+import Timer from "../../utils/timer" 
+import { EventBus } from "../../utils/event-bus"
+import { ipcRenderer } from "electron"
 
 export default {
   props: ["delayMins"],
@@ -47,127 +47,127 @@ export default {
       sliderValue: 100,
       timeInt: null,
       switchValue: true
-    };
+    }
   },
   created() {
     ipcRenderer.on("work-start", (event, workMin) => {
-      console.log("work-start...", workMin);
-      this.createTimer(workMin);
-    });
+      console.log("work-start...", workMin)
+      this.createTimer(workMin)
+    })
     ipcRenderer.on("break-delay", (event, delayMin) => {
-      console.log("work break-delay");
-      this.createTimer(delayMin);
-    });
+      console.log("work break-delay")
+      this.createTimer(delayMin)
+    })
   },
   mounted() {
     EventBus.$on("timer-completed", () => {
-      console.log("timer-completed!!!");
-      ipcRenderer.send("timer-completed", "work");
-      this.resetTimer();
-    });
+      console.log("timer-completed!!!")
+      ipcRenderer.send("timer-completed", "work")
+      this.resetTimer()
+    })
   },
   computed: {
     /*
     * store
     */
     timeWork() {
-      return this.$store.getters.timeWork;
+      return this.$store.getters.timeWork
     },
 
     timeRemainingSeconds() {
-      const remainingSeconds = this.timer.getRemainingSeconds();
-      return remainingSeconds;
+      const remainingSeconds = this.timer.getRemainingSeconds()
+      return remainingSeconds
     },
 
     timeRemaining() {
       if (!this.timer) {
-        return "XXX";
+        return "XXX"
       }
-      const { remainingMinutes, remainingSeconds } = this.timer.getRemaining();
+      const { remainingMinutes, remainingSeconds } = this.timer.getRemaining()
       if (remainingMinutes <= 0) {
-        this.timeUnit = "seconds";
-        return this.formatTime(remainingSeconds);
+        this.timeUnit = "seconds"
+        return this.formatTime(remainingSeconds)
       }
-      this.timeUnit = "minutes";
+      this.timeUnit = "minutes"
 
-      return this.formatTime(remainingMinutes);
+      return this.formatTime(remainingMinutes)
     },
 
     sliderMax() {
-      console.log("timeWork: " + this.timeWork * 60);
-      return this.timeWork * 60;
+      console.log("timeWork: " + this.timeWork * 60)
+      return this.timeWork * 60
     }
   },
   watch: {
     sliderValue() {
-      console.log(this.sliderValue);
+      console.log(this.sliderValue)
       if (this.timeInt) {
-        clearInterval(this.timerInt);
+        clearInterval(this.timerInt)
       }
       if (this.sliderValue >= 60) {
-        this.timeUnit = "minutes";
+        this.timeUnit = "minutes"
       } else {
-        this.timeUnit = "seconds";
+        this.timeUnit = "seconds"
       }
-      this.timer.resetElapsedTime(this.sliderValue);
+      this.timer.resetElapsedTime(this.sliderValue)
     }
   },
   methods: {
     switchChange(val) {
       // this.$store.dispatch("setMainSwitch", val)
       if (val === true) {
-        this.resumeTimer();
+        this.resumeTimer()
       } else {
-        this.pauseTimer();
+        this.pauseTimer()
       }
     },
     // listenChange() {
     //   this.timeInt = setInterval(() => {
-    //     this.sliderValue = this.timeRemainingSeconds;
-    //   }, 100);
+    //     this.sliderValue = this.timeRemainingSeconds
+    //   }, 100)
     // },
     sliderChange() {
-      // this.listenChange();
+      // this.listenChange()
     },
     formatTime(time) {
       if (time === 60) {
-        return "00";
+        return "00"
       } else if (time < 10) {
-        return `0${time}`;
+        return `0${time}`
       } else {
-        return time;
+        return time
       }
     },
     pauseTimer() {
-      this.timer.pause();
+      this.timer.pause()
     },
     resumeTimer() {
-      this.timer.resume();
+      this.timer.resume()
     },
 
     createTimer(minutes) {
-      this.resetTimer();
-      this.timer = new Timer(minutes);
-      this.startTimer();
+      this.resetTimer()
+      this.timer = new Timer(minutes)
+      this.startTimer()
     },
     startTimer() {
       if (this.switchValue === true) {
-        this.timer.start();
+        this.timer.start()
       }
     },
 
     settingsClick() {
-      // this.pauseTimer();
+      // this.pauseTimer()
       ipcRenderer.send('settings-start')
     },
     resetTimer() {
       if (this.timer) {
-        this.timer.reset();
-        this.sliderValue = this.timeRemainingSeconds;
+        this.timer.reset()
+        this.sliderValue = this.timeRemainingSeconds
       }
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">

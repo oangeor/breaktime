@@ -52,19 +52,19 @@
 </template>
 
 <script>
-import { EventBus } from "../../utils/event-bus";
-import sliderSetting from "./component/SliderSettings";
-import { BrowserWindow } from "electron";
-const { ipcRenderer } = require("electron");
+import { EventBus } from "../../utils/event-bus"
+import sliderSetting from "./component/SliderSettings"
+import { BrowserWindow } from "electron"
+const { ipcRenderer } = require("electron")
 
-const Store = require("electron-store");
-const store = new Store();
-console.log(store);
+const Store = require("electron-store")
+const store = new Store()
+console.log(store)
 
 // window.onbeforeunload = e => {
-//     ipcRenderer.send("hide-settings-window");
-//     e.returnValue = true;
-// };
+//     ipcRenderer.send("hide-settings-window")
+//     e.returnValue = true
+// }
 
 export default {
   components: { sliderSetting },
@@ -75,58 +75,58 @@ export default {
       switchValue: this.$store.getters.mainSwitch,
       workSettingChanged: false,
       testTime: "空"
-    };
+    }
   },
   computed: {
     settings() {
-      console.log("store.store");
-      return store.store;
+      console.log("store.store")
+      return store.store
     },
     sliderWorkValue() {
-      return this.$store.getters.timeWork;
+      return this.$store.getters.timeWork
     },
 
     sliderShortBreakValue() {
-      return this.$store.getters.timeShortBreak;
+      return this.$store.getters.timeShortBreak
     },
     sliderLongBreakValue() {
-      return this.$store.getters.timeLongBreak;
+      return this.$store.getters.timeLongBreak
     },
     sliderRound() {
-      return this.$store.getters.workRounds;
+      return this.$store.getters.workRounds
     }
   },
   mounted() {
-    this.workSettingChanged = false;
-    ipcRenderer.send("work-start", this.$store.getters.timeWork);
+    this.workSettingChanged = false
+    ipcRenderer.send("work-start", this.$store.getters.timeWork)
     ipcRenderer.on("break-delay", event => {}),
       ipcRenderer.on("timer-completed", event => {
-        console.log("timer-completed!!!!!");
-        const currentBreak = this.$store.getters.currentBreak;
-        const round = this.$store.getters.round;
-        const workRounds = this.$store.getters.workRounds;
+        console.log("timer-completed!!!!!")
+        const currentBreak = this.$store.getters.currentBreak
+        const round = this.$store.getters.round
+        const workRounds = this.$store.getters.workRounds
         // alert("round: " + round + ' workRounds: ' + workRounds)
         if (currentBreak === "work") {
           if (round >= workRounds) {
-            this.$store.dispatch("setCurrentBreak", "long-break");
-            this.testTime = "long-break";
-            ipcRenderer.send("break-start", this.$store.getters.timeLongBreak);
+            this.$store.dispatch("setCurrentBreak", "long-break")
+            this.testTime = "long-break"
+            ipcRenderer.send("break-start", this.$store.getters.timeLongBreak)
           } else {
-            this.$store.dispatch("setCurrentBreak", "short-break");
-            this.testTime = "short-break";
-            ipcRenderer.send("break-start", this.$store.getters.timeShortBreak);
+            this.$store.dispatch("setCurrentBreak", "short-break")
+            this.testTime = "short-break"
+            ipcRenderer.send("break-start", this.$store.getters.timeShortBreak)
           }
           //   EventBus.$emit('open-break')
         } else {
-          this.testTime = "work";
+          this.testTime = "work"
           if (currentBreak === "short-break") {
-            this.$store.dispatch("setCurrentBreak", "work");
+            this.$store.dispatch("setCurrentBreak", "work")
           } else if (currentBreak === "long-break") {
-            this.$store.dispatch("setCurrentBreak", "work");
+            this.$store.dispatch("setCurrentBreak", "work")
           }
-          ipcRenderer.send("work-start", this.$store.getters.timeWork);
+          ipcRenderer.send("work-start", this.$store.getters.timeWork)
         }
-      });
+      })
 
     //   ipcRenderer.on('timer-completed',function(){
     //       console.log(arguments)
@@ -134,34 +134,34 @@ export default {
   },
   methods: {
     sendRpc() {
-      // ipcRenderer.send("break-start",this.$store.getters.timeLongBreak);
-      this.$store.dispatch("fetchStore");
+      // ipcRenderer.send("break-start",this.$store.getters.timeLongBreak)
+      this.$store.dispatch("fetchStore")
     },
     quitApp() {
-      ipcRenderer.send("quit-app");
+      ipcRenderer.send("quit-app")
     },
     switchChange(val) {
-      this.$store.dispatch("setMainSwitch", val);
+      this.$store.dispatch("setMainSwitch", val)
     },
     settingChange(caseName, val) {
       switch (caseName) {
         case "work-rounds":
-          this.workSettingChanged = true;
-          this.$store.dispatch("setWorkRounds", val);
-          break;
+          this.workSettingChanged = true
+          this.$store.dispatch("setWorkRounds", val)
+          break
         case "time-work":
-          this.$store.dispatch("setTimeWork", val);
-          break;
+          this.$store.dispatch("setTimeWork", val)
+          break
         case "time-short-break":
-          this.$store.dispatch("setTimeShortBreak", val);
-          break;
+          this.$store.dispatch("setTimeShortBreak", val)
+          break
         case "time-long-break":
-          this.$store.dispatch("setTimeLongBreak", val);
-          break;
+          this.$store.dispatch("setTimeLongBreak", val)
+          break
       }
     }
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
